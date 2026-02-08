@@ -1,0 +1,30 @@
+# IDE files and directories
+.idea/
+.DS_Store
+*.iml
+*.hprof
+
+# Build files and directories
+build/
+*.apk
+*.aab
+*.jar
+*.aar
+
+# Local properties file (contains SDK path, API keys, and other user-specific properties)
+local.properties
+
+# Gradle files
+.gradle/
+captures/
+*.class
+
+# Keystore files (to not commit these)
+*.jks
+*.keystore
+
+# Log files
+*.log
+
+# Kotlin caches
+.kotlin/

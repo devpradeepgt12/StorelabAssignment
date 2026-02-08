@@ -1,0 +1,14 @@
+<resources>
+    <string name="gallery_title">StoreLab Pictures</string>
+    <string name="sort_by_author">Sort by Author</string>
+    <string name="sort_by_id">Sort by Size</string>
+    <string name="detail_title">Picture Details</string>
+    <string name="back_button_description">Back</string>
+    <string name="image_description">Photo by %1$s</string>
+    <string name="captured_by">Captured by</string>
+    <string name="detail_width">Width</string>
+    <string name="detail_height">Height</string>
+    <string name="detail_id">ID</string>
+    <string name="pixels_unit">%1$d px</string>
+    <string name="id_prefix">#%1$s</string>
+</resources>
