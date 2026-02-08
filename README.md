@@ -37,31 +37,39 @@ This project is a practical demonstration of building a robust, maintainable, an
 The project follows a strict Clean Architecture pattern, separating the codebase into three distinct layers: Presentation, Domain, and Data. This separation of concerns makes the app more scalable, maintainable, and testable.
 
 ```mermaid
-graph LR
-    subgraph Presentation_Layer [Presentation Layer]
-        A[GalleryScreen/ImageDetailScreen] -- Events --> B[GalleryViewModel]
-        B -- Observes --> C{StateFlow}
-        C -- UI State --> A
+graph TD
+    subgraph "Presentation Layer"
+        UI(Compose UI) -- "User Events" --> ViewModel
+        ViewModel -- "UI State" --> UI
     end
 
-    subgraph Domain_Layer [Domain Layer]
-        D[GalleryRepository Interface]
-        I[PicsumImage Domain Model]
+    subgraph "Domain Layer"
+        RepoInterface[GalleryRepository Interface]
+        DomainModel[PicsumImage Domain Model]
     end
 
-    subgraph Data_Layer [Data Layer]
-        E[GalleryRepositoryImpl] -- Implements --> D
-        F[PicsumApi Ktor Client]
-        G[PicsumImageDto]
-        H[PicsumImageMapper]
+    subgraph "Data Layer"
+        RepoImpl[GalleryRepositoryImpl]
+        Ktor[Ktor API Service]
+        Mapper[Mapper]
     end
 
-    B --> D
-    E --> F
-    F -- Returns DTOs --> E
-    E --> H
-    H -- Maps G to I --> E
-    E -- Returns Result --> B
+    subgraph "External"
+        Remote[Picsum REST API]
+    end
+
+    %% Dependencies & Control Flow
+    ViewModel -- "calls" --> RepoInterface
+    RepoImpl -- "implements" --> RepoInterface
+    RepoImpl -- "uses" --> Ktor
+    RepoImpl -- "uses" --> Mapper
+
+    %% Data Flow Explained
+    Ktor     -- "1. Fetches JSON from" --> Remote
+    Ktor     -- "2. Returns DTOs to" --> RepoImpl
+    RepoImpl -- "3. Passes DTO to" --> Mapper
+    Mapper   -- "4. Returns Domain Model to" --> RepoImpl
+    RepoImpl -- "5. Returns Domain Model to" --> ViewModel
 
 ```
 
