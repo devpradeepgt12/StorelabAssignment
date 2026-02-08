@@ -8,7 +8,7 @@ An example Android application built with Kotlin Multiplatform and Jetpack Compo
 
 | Gallery Screen | Detail Screen |
 | :---: | :---: |
-| <img src="https://raw.githubusercontent.com/your-github-username/StorelabAssignment/main/docs/images/gallery_screen.png" width="270"> | <img src="https://raw.githubusercontent.com/your-github-username/StorelabAssignment/main/docs/images/detail_screen.png" width="270"> |
+| <img src="https://github.com/devpradeepgt12/StorelabAssignment/blob/main/docs/images/gallery_screen.png" width="270"> | <img src="https://github.com/devpradeepgt12/StorelabAssignment/blob/main/docs/images/detail_screen.png" width="270"> |
 
 ## Features
 
@@ -38,28 +38,31 @@ The project follows a strict Clean Architecture pattern, separating the codebase
 
 ```mermaid
 graph LR
-    subgraph Presentation Layer
-        A[GalleryScreen/ImageDetailScreen (UI)] -- Events --> B[GalleryViewModel]
-        B -- Observes --> C{StateFlow<GalleryUiState>}
+    subgraph Presentation_Layer [Presentation Layer]
+        A[GalleryScreen/ImageDetailScreen] -- Events --> B[GalleryViewModel]
+        B -- Observes --> C{StateFlow}
         C -- UI State --> A
     end
-    subgraph Domain Layer
-        D[GalleryRepository (Interface)]
-        I[PicsumImage (Domain Model)]
+
+    subgraph Domain_Layer [Domain Layer]
+        D[GalleryRepository Interface]
+        I[PicsumImage Domain Model]
     end
-    subgraph Data Layer
+
+    subgraph Data_Layer [Data Layer]
         E[GalleryRepositoryImpl] -- Implements --> D
-        F[PicsumApi (Ktor Client)]
-        G[PicsumImageDto (Data Model)]
+        F[PicsumApi Ktor Client]
+        G[PicsumImageDto]
         H[PicsumImageMapper]
     end
 
-    B -- Calls --> D
-    E -- Calls --> F
+    B --> D
+    E --> F
     F -- Returns DTOs --> E
-    E -- Uses --> H
-    H -- Maps DTO(G) to Domain Model(I) --> E
-    E -- Returns Result<PicsumImage> --> B
+    E --> H
+    H -- Maps G to I --> E
+    E -- Returns Result --> B
+
 ```
 
 -   **Presentation Layer:** Built with Jetpack Compose and `ViewModel`. Its role is to display the UI and delegate user actions to the `ViewModel`. It is completely unaware of where the data comes from.
