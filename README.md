@@ -2,7 +2,7 @@
 
 **Author:** Pradeep Jeswani
 
-An example Android application built with Kotlin Multiplatform and Jetpack Compose, demonstrating modern app architecture and best practices. This project displays a gallery of images fetched from the Picsum API, allowing users to view details and sort the images.
+A compose multiplatform application built with Kotlin Multiplatform and Jetpack Compose, demonstrating modern app architecture and best practices. This project displays a gallery of images fetched from the Picsum API, allowing users to view details and sort the images.
 
 ## Screenshots
 
