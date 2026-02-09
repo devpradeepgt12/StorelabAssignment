@@ -23,7 +23,7 @@ A compose multiplatform application built with Kotlin Multiplatform and Jetpack 
 
 This project is a practical demonstration of building a robust, maintainable, and testable Android application using the latest technologies.
 
-### Core Technologies
+### Core Technologies:
 
 -   **Kotlin:** The official language for Android development.
 -   **Kotlin Multiplatform:** Sharing code between platforms (currently configured for Android, iOS and Desktop).
@@ -32,7 +32,7 @@ This project is a practical demonstration of building a robust, maintainable, an
 -   **Ktor Client:** A modern, multiplatform networking client for making API requests.
 -   **Koin:** A pragmatic and lightweight dependency injection framework for Kotlin.
 
-### Clean Architecture
+### Clean Architecture:
 
 The project follows a strict Clean Architecture pattern, separating the codebase into three distinct layers: Presentation, Domain, and Data. This separation of concerns makes the app more scalable, maintainable, and testable.
 
@@ -77,14 +77,14 @@ graph TD
 -   **Domain Layer:** This is the core of the application. It contains the business logic, It follows interface pattern, domain models (`PicsumImage`), and repository interfaces (`GalleryRepository`). It is completely independent of the other layers.
 -   **Data Layer:** Responsible for providing data to the Domain layer. It contains the implementation of the repository interface (`GalleryRepositoryImpl`), the Ktor API service, and mappers to convert data transfer objects (DTOs) to domain models (PicsumImage).
 
-### MVI & Reactive State Management
+### MVI & Reactive State Management:
 
 The app uses a Model-View-Intent (MVI) pattern for state management, powered by Kotlin's `Flow`.
 
 -   **Unidirectional Data Flow:** The UI observes a single `StateFlow<GalleryUiState>` from the `ViewModel`. User actions (like tapping a sort button) are sent to the `ViewModel` as events. The `ViewModel` processes these events, updates its state, and the UI automatically reflects the new state.
 -   **Reactive Data Streams:** The `ViewModel` uses the `combine` operator to merge multiple data sources (the result from the network, the current sort option, and the selected image) into a single, cohesive UI state. The `stateIn` operator then converts this into a hot `StateFlow` that efficiently shares the state with the UI, surviving configuration changes.
 
-### Comprehensive Testing Strategy
+### Comprehensive Testing Strategy:
 
 Testability is a first-class citizen in this project.
 
