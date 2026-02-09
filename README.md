@@ -105,7 +105,7 @@ Testability is a first-class citizen in this project.
     ./gradlew runAllTests
     ```
 4.  **Run the App:**
-    Select the `composeApp` run configuration and deploy it to an Android emulator or a physical device.
+    Select the `composeApp` run configuration and deploy it to an Android emulator, iOS Simulator, desktop or a physical device.
 
 ## License
 
