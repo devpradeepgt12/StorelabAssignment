@@ -22,6 +22,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.pradeep.storelabassignment.domain.model.PicsumImage
@@ -37,7 +38,6 @@ import storelabassignment.composeapp.generated.resources.sort_by_id
 
 /**
  * Gallery Screen - Displays the grid of images and sorting options.
- * This composable is stateless, receiving all data and callbacks from its caller.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -45,7 +45,7 @@ fun GalleryScreen(
     viewModel: GalleryViewModel,
     onImageClick: (PicsumImage) -> Unit = {}
 ) {
-    val state = viewModel.uiState.collectAsState().value
+    val state by viewModel.uiState.collectAsState()
 
     Scaffold(
         topBar = {
@@ -67,21 +67,29 @@ fun GalleryScreen(
                     horizontalArrangement = Arrangement.SpaceEvenly,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    val activeColor = MaterialTheme.colorScheme.primary
+                    val inactiveColor = MaterialTheme.colorScheme.onSurface
+
+                    val authorButtonColor = if (state.sortOption == SortOption.AUTHOR) activeColor else inactiveColor
+                    val sizeButtonColor = if (state.sortOption == SortOption.SIZE) activeColor else inactiveColor
+
                     TextButton(onClick = { viewModel.toggleSort(SortOption.AUTHOR) }) {
                         Icon(
                             imageVector = Icons.Default.Person,
-                            contentDescription = stringResource(Res.string.sort_by_author)
+                            contentDescription = stringResource(Res.string.sort_by_author),
+                            tint = authorButtonColor
                         )
                         Spacer(Modifier.width(NUM_4))
-                        Text(stringResource(Res.string.sort_by_author))
+                        Text(stringResource(Res.string.sort_by_author), color = authorButtonColor)
                     }
                     TextButton(onClick = { viewModel.toggleSort(SortOption.SIZE) }) {
                         Icon(
                             imageVector = Icons.Default.PhotoSizeSelectLarge,
-                            contentDescription = stringResource(Res.string.sort_by_id)
+                            contentDescription = stringResource(Res.string.sort_by_id),
+                            tint = sizeButtonColor
                         )
                         Spacer(Modifier.width(NUM_4))
-                        Text(stringResource(Res.string.sort_by_id))
+                        Text(stringResource(Res.string.sort_by_id), color = sizeButtonColor)
                     }
                 }
             }
@@ -90,9 +98,12 @@ fun GalleryScreen(
         GalleryScreenContent(
             modifier = Modifier.padding(paddingValues),
             isLoading = state.isLoading,
+            isLoadingNextPage = state.isLoadingNextPage,
             error = state.error,
             images = state.images,
-            onImageClick = onImageClick
+            onImageClick = onImageClick,
+            loadMore = { viewModel.loadMoreImages() },
+            sortOption = state.sortOption
         )
     }
 }
@@ -100,10 +111,13 @@ fun GalleryScreen(
 @Composable
 fun GalleryScreenContent(
     isLoading: Boolean,
+    isLoadingNextPage: Boolean,
     error: String?,
     images: List<PicsumImage>,
     onImageClick: (PicsumImage) -> Unit,
-    modifier: Modifier = Modifier
+    loadMore: () -> Unit,
+    modifier: Modifier = Modifier,
+    sortOption: SortOption = SortOption.NONE
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         when {
@@ -117,7 +131,10 @@ fun GalleryScreenContent(
                 GalleryGrid(
                     images = images,
                     onImageClick = onImageClick,
-                    modifier = Modifier.fillMaxSize()
+                    loadMore = loadMore,
+                    isLoadingNextPage = isLoadingNextPage,
+                    modifier = Modifier.fillMaxSize(),
+                    sortOption = sortOption
                 )
             }
         }

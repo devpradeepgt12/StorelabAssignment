@@ -12,7 +12,7 @@ An example Android application built with Kotlin Multiplatform and Jetpack Compo
 
 ## Features
 
--   **Image Gallery:** View an scrollable grid of beautiful pictures from the network.
+-   **Image Gallery:** View an endless scrollable grid of beautiful pictures from the network.
 -   **Dynamic Sorting:** Sort the image gallery by author name or by image dimensions (size).
 -   **Image Details:** Tap on any image to view its details, including the author, width, height, and ID.
 -   **Clean, Modern UI:** A sleek, minimal user interface built entirely with Jetpack Compose.
@@ -112,3 +112,4 @@ Testability is a first-class citizen in this project.
 Copyright (c) 2026 Pradeep Jeswani
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
