@@ -34,6 +34,7 @@ kotlin {
         }
     }
     
+    @Suppress("DSL_SCOPE_VIOLATION")
     sourceSets {
         androidMain.dependencies {
             implementation(libs.compose.uiToolingPreview)
