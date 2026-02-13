@@ -11,6 +11,9 @@ build/
 *.jar
 *.aar
 
+# Keep the Gradle wrapper JAR
+!gradle/wrapper/gradle-wrapper.jar
+
 # Local properties file (contains SDK path, API keys, and other user-specific properties)
 local.properties
 

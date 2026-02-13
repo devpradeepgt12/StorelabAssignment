@@ -20,7 +20,6 @@ data class GalleryUiState(
     val isLastPage: Boolean = false,
     val images: List<PicsumImage> = emptyList(),
     val error: String? = null,
-    val selectedImage: PicsumImage? = null,
     val sortOption: SortOption = SortOption.NONE,
     val originalImages: List<PicsumImage> = emptyList()
 )

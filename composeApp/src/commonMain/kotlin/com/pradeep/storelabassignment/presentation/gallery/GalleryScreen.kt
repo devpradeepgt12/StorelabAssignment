@@ -38,12 +38,13 @@ import storelabassignment.composeapp.generated.resources.sort_by_id
 
 /**
  * Gallery Screen - Displays the grid of images and sorting options.
+ * This composable is stateful and uses a hoisted ViewModel.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GalleryScreen(
     viewModel: GalleryViewModel,
-    onImageClick: (PicsumImage) -> Unit = {}
+    onImageClick: (PicsumImage) -> Unit,
 ) {
     val state by viewModel.uiState.collectAsState()
 

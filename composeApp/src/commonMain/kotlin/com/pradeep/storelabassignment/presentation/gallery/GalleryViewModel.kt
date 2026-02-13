@@ -7,41 +7,36 @@ import com.pradeep.storelabassignment.domain.repository.GalleryRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-/**
- * ViewModel for the gallery screen, using a reactive approach with `stateIn`.
- */
 class GalleryViewModel(private val repository: GalleryRepository) : ViewModel() {
 
     private val _sortOption = MutableStateFlow(SortOption.NONE)
-    private val _selectedImage = MutableStateFlow<PicsumImage?>(null)
 
-    // --- Pagination State Holder ---
+    // This state is specifically for passing data to the detail screen.
+    private val _detailImage = MutableStateFlow<PicsumImage?>(null)
+    val detailImage = _detailImage.asStateFlow()
+
     private data class PagedData(
         val images: List<PicsumImage> = emptyList(),
         val isLoading: Boolean = false,
         val isLastPage: Boolean = false
     )
     private val _paginationState = MutableStateFlow(PagedData())
-    private var currentPage = 2 // Page 1 is handled by the initial flow
+    private var currentPage = 2
 
-    // This flow handles the initial data load (Page 1) and only ever runs once.
     private val _initialImagesResultFlow = flow {
         emit(repository.fetchImages(page = 1))
     }
 
-    // The UI state is a combination of the initial load, paginated data, and user actions.
     val uiState: StateFlow<GalleryUiState> = combine(
-        _initialImagesResultFlow,
-        _paginationState,
-        _sortOption,
-        _selectedImage
-    ) { initialResult, pagedData, sortOption, selectedImage ->
+        _initialImagesResultFlow, _paginationState, _sortOption
+    ) { initialResult, pagedData, sortOption ->
         initialResult.fold(
             onSuccess = { initialImages ->
                 val allImages = initialImages + pagedData.images
@@ -55,7 +50,6 @@ class GalleryViewModel(private val repository: GalleryRepository) : ViewModel() 
                     images = sortedImages,
                     originalImages = allImages,
                     sortOption = sortOption,
-                    selectedImage = selectedImage,
                     isLoadingNextPage = pagedData.isLoading,
                     isLastPage = pagedData.isLastPage
                 )
@@ -70,12 +64,8 @@ class GalleryViewModel(private val repository: GalleryRepository) : ViewModel() 
         initialValue = GalleryUiState(isLoading = true)
     )
 
-    /**
-     * Fetches the next page of images. This is called from the UI.
-     */
     fun loadMoreImages() {
         if (_paginationState.value.isLoading || _paginationState.value.isLastPage) return
-
         viewModelScope.launch {
             _paginationState.update { it.copy(isLoading = true) }
             repository.fetchImages(page = currentPage)
@@ -90,14 +80,17 @@ class GalleryViewModel(private val repository: GalleryRepository) : ViewModel() 
                     if (newImages.isNotEmpty()) currentPage++
                 }
                 .onFailure {
-                    // On failure, stop pagination.
                     _paginationState.update { it.copy(isLoading = false, isLastPage = true) }
                 }
         }
     }
 
-    fun selectImage(image: PicsumImage?) {
-        _selectedImage.value = image
+    fun onImageSelectedForDetail(image: PicsumImage) {
+        _detailImage.value = image
+    }
+
+    fun onDetailScreenDismissed() {
+        _detailImage.value = null
     }
 
     fun toggleSort(option: SortOption) {
