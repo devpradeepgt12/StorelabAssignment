@@ -1,8 +1,13 @@
 package com.pradeep.storelabassignment
 
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.pradeep.storelabassignment.presentation.detail.DetailScreen
 import com.pradeep.storelabassignment.presentation.gallery.GalleryScreen
 import com.pradeep.storelabassignment.presentation.gallery.GalleryViewModel
@@ -13,24 +18,36 @@ import org.koin.compose.viewmodel.koinViewModel
 @Preview
 fun App() {
     AppTheme {
-        // The ViewModel is created here and owned by the App composable.
+        val navController = rememberNavController()
+        // The ViewModel is hoisted to the NavHost level, making it shared.
         val galleryViewModel = koinViewModel<GalleryViewModel>()
-        val state by galleryViewModel.uiState.collectAsState()
 
         Surface {
-            // Simple Navigation Logic based on the ViewModel's state
-            if (state.selectedImage != null) {
-                // Detail View
-                DetailScreen(
-                    image = state.selectedImage!!,
-                    onBack = { galleryViewModel.selectImage(null) }
-                )
-            } else {
-                // The single ViewModel instance is passed down to the GalleryScreen.
-                GalleryScreen(
-                    viewModel = galleryViewModel,
-                    onImageClick = { galleryViewModel.selectImage(it) }
-                )
+            NavHost(navController = navController, startDestination = "gallery") {
+                composable("gallery") {
+                    GalleryScreen(
+                        viewModel = galleryViewModel,
+                        onImageClick = {
+                            // Set the state in the ViewModel and navigate
+                            galleryViewModel.onImageSelectedForDetail(it)
+                            navController.navigate("detail")
+                        }
+                    )
+                }
+                composable("detail") {
+                    // The detail screen gets its data directly from the shared ViewModel
+                    val image by galleryViewModel.detailImage.collectAsState()
+                    if (image != null) {
+                        DetailScreen(
+                            image = image!!,
+                            onBack = {
+                                // Clear the state in the ViewModel and navigate back
+                                galleryViewModel.onDetailScreenDismissed()
+                                navController.popBackStack()
+                            }
+                        )
+                    }
+                }
             }
         }
     }
