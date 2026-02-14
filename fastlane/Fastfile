@@ -1,0 +1,50 @@
+default_platform(:android)
+
+platform :android do
+  before_all do
+    sh("chmod +x ../gradlew")
+  end
+
+  desc "Build the debug APK"
+  lane :build_debug do
+    gradle(
+      task: "assembleDebug",
+      project_dir: "../composeApp/"
+    )
+  end
+
+  desc "Build the signed release APK"
+  lane :build_signed_release do
+    # Decode the signing key from the Base64 secret
+    File.open("release.keystore", "wb") do |file|
+      file.write(Base64.decode64(ENV["SIGNING_KEY_BASE64"]))
+    end
+
+    # Set environment variables for Gradle to use for signing
+    ENV["SIGNING_STORE_FILE"] = "release.keystore"
+    ENV["SIGNING_STORE_PASSWORD"] = ENV["KEY_PASSWORD"]
+    ENV["SIGNING_KEY_ALIAS"] = ENV["KEY_ALIAS"]
+    ENV["SIGNING_KEY_PASSWORD"] = ENV["KEY_ALIAS_PASSWORD"]
+
+    gradle(
+      task: "assembleRelease",
+      project_dir: "../composeApp/"
+    )
+  end
+
+  desc "Build the release APK (calls the signed release lane)"
+  lane :build_release do
+    build_signed_release
+  end
+
+  error do |lane, exception|
+    puts "An error occurred: #{exception.message}"
+    # Clean up the temporary keystore file in case of an error
+    File.delete("release.keystore") if File.exist?("release.keystore")
+  end
+
+  after_all do |lane|
+    # Clean up the temporary keystore file after a successful run
+    File.delete("release.keystore") if File.exist?("release.keystore")
+  end
+end
