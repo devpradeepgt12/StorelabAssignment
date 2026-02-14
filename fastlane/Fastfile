@@ -1,0 +1,52 @@
+default_platform(:android)
+
+platform :android do
+  # Get the directory of the Fastfile to calculate the project root.
+  fastlane_dir = File.dirname(__FILE__)
+  project_dir = File.expand_path("..", fastlane_dir)
+
+  desc "Build the debug APK"
+  lane :build_debug do
+    # Explicitly change to the project root and then execute Gradle.
+    sh("cd #{project_dir} && ./gradlew :composeApp:assembleDebug")
+  end
+
+  desc "Build the signed release APK"
+  lane :build_signed_release do
+    # The temporary keystore will be created in the fastlane directory.
+    keystore_path = File.join(fastlane_dir, "release.keystore")
+
+    # Decode the signing key from the Base64 secret.
+    File.open(keystore_path, "wb") do |file|
+      file.write(Base64.decode64(ENV["SIGNING_KEY_BASE64"]))
+    end
+
+    # Set environment variables for Gradle to use for signing.
+    # The path must be relative to the project root where gradlew runs.
+    ENV["SIGNING_STORE_FILE"] = "fastlane/release.keystore"
+    ENV["SIGNING_STORE_PASSWORD"] = ENV["KEY_PASSWORD"]
+    ENV["SIGNING_KEY_ALIAS"] = ENV["KEY_ALIAS"]
+    ENV["SIGNING_KEY_PASSWORD"] = ENV["KEY_ALIAS_PASSWORD"]
+
+    # Explicitly change to the project root and then execute Gradle.
+    sh("cd #{project_dir} && ./gradlew :composeApp:assembleRelease")
+  end
+
+  desc "Build the release APK (calls the signed release lane)"
+  lane :build_release do
+    build_signed_release
+  end
+
+  error do |lane, exception|
+    puts "An error occurred: #{exception.message}"
+    # Clean up the temporary keystore file in case of an error
+    keystore_path = File.join(File.dirname(__FILE__), "release.keystore")
+    File.delete(keystore_path) if File.exist?(keystore_path)
+  end
+
+  after_all do |lane|
+    # Clean up the temporary keystore file after a successful run
+    keystore_path = File.join(File.dirname(__FILE__), "release.keystore")
+    File.delete(keystore_path) if File.exist?(keystore_path)
+  end
+end
