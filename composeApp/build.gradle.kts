@@ -33,7 +33,8 @@ kotlin {
             jvmTarget.set(JvmTarget.JVM_17)
         }
     }
-
+    
+    @Suppress("DSL_SCOPE_VIOLATION")
     sourceSets {
         androidMain.dependencies {
             implementation(libs.compose.uiToolingPreview)
@@ -124,6 +125,11 @@ android {
         getByName("release") {
             isMinifyEnabled = true
             signingConfig = signingConfigs.getByName("release")
+            // Add the ProGuard rules file
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
         getByName("debug") {
         }
