@@ -33,7 +33,7 @@ kotlin {
             jvmTarget.set(JvmTarget.JVM_17)
         }
     }
-    
+
     sourceSets {
         androidMain.dependencies {
             implementation(libs.compose.uiToolingPreview)
@@ -90,14 +90,14 @@ android {
 
     signingConfigs {
         create("release") {
-            // Use environment variables or Gradle properties for signing information
             val storeFile = System.getenv("SIGNING_STORE_FILE")
             val storePassword = System.getenv("SIGNING_STORE_PASSWORD")
             val keyAlias = System.getenv("SIGNING_KEY_ALIAS")
             val keyPassword = System.getenv("SIGNING_KEY_PASSWORD")
 
             if (storeFile != null) {
-                this.storeFile = file(storeFile)
+                // Resolve the file path from the root project's directory
+                this.storeFile = rootProject.file(storeFile)
                 this.storePassword = storePassword
                 this.keyAlias = keyAlias
                 this.keyPassword = keyPassword
