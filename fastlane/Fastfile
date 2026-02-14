@@ -1,16 +1,10 @@
 default_platform(:android)
 
 platform :android do
-  before_all do
-    # Make sure gradlew is executable. The ../ is because Fastlane runs inside the fastlane directory.
-    sh("chmod +x ../gradlew")
-  end
-
   desc "Build the debug APK"
   lane :build_debug do
     gradle(
-      task: ":composeApp:assembleDebug",
-      project_dir: "../"
+      task: ":composeApp:assembleDebug"
     )
   end
 
@@ -28,8 +22,7 @@ platform :android do
     ENV["SIGNING_KEY_PASSWORD"] = ENV["KEY_ALIAS_PASSWORD"]
 
     gradle(
-      task: ":composeApp:assembleRelease",
-      project_dir: "../"
+      task: ":composeApp:assembleRelease"
     )
   end
 
