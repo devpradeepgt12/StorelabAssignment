@@ -1,5 +1,10 @@
 package com.pradeep.storelabassignment
 
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -19,29 +24,32 @@ import org.koin.compose.viewmodel.koinViewModel
 fun App() {
     AppTheme {
         val navController = rememberNavController()
-        // The ViewModel is hoisted to the NavHost level, making it shared.
         val galleryViewModel = koinViewModel<GalleryViewModel>()
 
         Surface {
-            NavHost(navController = navController, startDestination = "gallery") {
+            NavHost(
+                navController = navController,
+                startDestination = "gallery",
+                enterTransition = { slideInHorizontally(initialOffsetX = { 1000 }, animationSpec = tween(300)) },
+                exitTransition = { slideOutHorizontally(targetOffsetX = { -1000 }, animationSpec = tween(300)) },
+                popEnterTransition = { fadeIn(animationSpec = tween(300)) },
+                popExitTransition = { fadeOut(animationSpec = tween(300)) }
+            ) {
                 composable("gallery") {
                     GalleryScreen(
                         viewModel = galleryViewModel,
                         onImageClick = {
-                            // Set the state in the ViewModel and navigate
                             galleryViewModel.onImageSelectedForDetail(it)
                             navController.navigate("detail")
                         }
                     )
                 }
                 composable("detail") {
-                    // The detail screen gets its data directly from the shared ViewModel
                     val image by galleryViewModel.detailImage.collectAsState()
                     if (image != null) {
                         DetailScreen(
                             image = image!!,
                             onBack = {
-                                // Clear the state in the ViewModel and navigate back
                                 galleryViewModel.onDetailScreenDismissed()
                                 navController.popBackStack()
                             }
